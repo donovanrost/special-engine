@@ -1,12 +1,14 @@
 import Vue from 'nativescript-vue'
-import App from './views/App'
 import VueDevtools from 'nativescript-vue-devtools'
-import RadListView from 'nativescript-ui-listview/vue';
-import firebase from 'nativescript-plugin-firebase';
+import Vuex from 'vuex'
+import { store } from './store/index.js'
 
-import Register from './views/auth/Register';
+import RadListView from 'nativescript-ui-listview/vue'
+import firebase from 'nativescript-plugin-firebase'
+
+import Register from './views/auth/Register'
 import Login from './views/auth/Login'
-
+import App from './views/App'
 
 if(TNS_ENV !== 'production') {
   Vue.use(VueDevtools)
@@ -30,9 +32,11 @@ firebase.init({
 );
 
 
+Vue.use(Vuex)
+Vue.use(RadListView)
 
-Vue.use(RadListView);
 
 new Vue({
+  store:store,
   render: h => h('frame', [h(Login)])
 }).$start()
