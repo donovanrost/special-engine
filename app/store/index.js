@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import configureModerator  from './modules/store-moderator'
 
+import configureModerator  from './modules/store-moderator'
+import auth from './modules/auth'
 
 
 Vue.use(Vuex)
@@ -11,7 +12,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
 	plugins: [configureModerator],
 	modules: {
-
+        auth: auth,
 		configureModerator
 
 	},

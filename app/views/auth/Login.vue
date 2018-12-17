@@ -32,6 +32,7 @@
 <script>
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
+import { mapActions } from 'vuex'
 
 export default {
     data() {
@@ -44,6 +45,9 @@ export default {
         };
     },
     methods: {
+        ...mapActions([
+            'loginWithEmailAndPassword'
+        ]),
         setProcessing(status){
             this.processing = status
         },
@@ -62,20 +66,22 @@ export default {
             }
 
             this.setProcessing(true)
-            firebase.login({
-                type: firebase.LoginType.PASSWORD,
-                passwordOptions: {
-                    email: this.email,
-                    password: this.password
-                }
-            })
+            this.loginWithEmailAndPassword({email: this.email, password: this.password})
             .then(cred => {
                 console.log(cred)
                 this.setProcessing(false)
                 this.resetForm()
+
             })
             .catch(err => {
                 console.log('Firebase Error: ', err)
+                alert(err)
+                .then(() => {
+                    console.log('Alert dialog closed');
+                    this.setProcessing(false)
+                    this.resetForm()
+                });
+                return
             })
 
         }

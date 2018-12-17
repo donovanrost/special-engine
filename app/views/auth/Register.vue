@@ -40,6 +40,8 @@
 <script>
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
+import {mapActions} from 'vuex'
+import routes from '../../routes'
 export default {
     data() {
         return {
@@ -52,6 +54,9 @@ export default {
         };
     },
     methods: {
+        ...mapActions([
+            'registerNewUserWithEmailAndPassword'
+        ]),
         setProcessing(status){
             this.processing = status
         },
@@ -66,7 +71,7 @@ export default {
                 .then(() => {
                     console.log("Alert dialog closed.");
                 });
-                return;
+                return
                 
             }
             if(this.password !== this.confirmPassword) {
@@ -77,18 +82,26 @@ export default {
                 return;
             }
             this.setProcessing(true)
-            firebase.createUser({email: this.email, password: this.password})
-            .then(cred => {
-                console.log(cred)
+            this.registerNewUserWithEmailAndPassword({email: this.email, password: this.password})
+            .then(() => {
                 this.setProcessing(false)
                 this.resetForm()
+                this.$navigateTo(routes.app, { clearHistory: true })
+
             })
             .catch(err => {
-                console.log('Firebase Error: ', err)
+                alert(err)
+                .then(() => {
+                    console.log('Alert dialog closed');
+                    this.setProcessing(false)
+                    this.resetForm()
+                });
+                return
             })
 
         }
-    }
+    },
+
 }
 </script>
 <style>
