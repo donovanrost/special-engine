@@ -26,6 +26,14 @@
                 ></Button>
             </StackLayout>
 
+
+            <Label class="login-label sign-up-label" @tap="navigateToRegister">
+                <FormattedString>
+                    <Span text="Don't have an account?"></Span>
+                    <Span text=" Signup" class="bold"></Span>
+                </FormattedString>
+            </Label>
+
         </FlexboxLayout>
     </Page>
 </template>
@@ -33,6 +41,8 @@
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
 import { mapActions } from 'vuex'
+import routes from '../../routes'
+
 
 export default {
     data() {
@@ -48,6 +58,9 @@ export default {
         ...mapActions([
             'loginWithEmailAndPassword'
         ]),
+        navigateToRegister(){
+            this.$navigateTo(routes.register)
+        },
         setProcessing(status){
             this.processing = status
         },
@@ -71,6 +84,8 @@ export default {
                 console.log(cred)
                 this.setProcessing(false)
                 this.resetForm()
+                this.$navigateTo(routes.app, { clearHistory: true })
+
 
             })
             .catch(err => {
@@ -119,5 +134,18 @@ export default {
 }
 .btn-primary:disabled {
   opacity: 0.5;
+}
+.login-label {
+    horizontal-align: center;
+    color: #A8A8A8;
+    font-size: 16;
+}
+
+.sign-up-label {
+    margin-bottom: 20;
+}
+
+.bold {
+    color: #000000;
 }
 </style>

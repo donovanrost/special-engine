@@ -1,5 +1,7 @@
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
+import axios from 'axios';
+
 
 const state = {
     authenticatedUser: null
@@ -18,32 +20,15 @@ const mutations = {
     },
     registerNewUser: (state, payload) => {
         console.log('new user registered')
-    } 
+    },
+
+
 }
 const actions = {
-    createNewUserDocument: (context, payload) => {
-        firebase.firestore.collection('users').doc(payload).set({
-            uid: payload,
-            maxBoards: 1,
-            maxPhases: 4,
-            defaultPhases: ['backlog', 'todo', 'doing', 'completed'],
-            boards: []
-
-        })
-        .then(() => {
-            
-        })
-        .catch(err => {
-            console.log(err)
-        })
-        
-    },
     registerNewUserWithEmailAndPassword: ({commit}, {email, password}) => {
         return firebase.createUser({email: email, password: password})
         .then(cred => {
             commit('setAuthenticatedUser', cred.uid)
-            commit('registerNewUser')
-
         })
 
     },
@@ -57,8 +42,7 @@ const actions = {
         })
         .then(cred => {
             console.log(cred)
-            commit('setAuthenticatedUser', cred.user.uid)
-            this.$navigateTo(routes.app, { clearHistory: true })
+            commit('setAuthenticatedUser', cred.uid)
 
         })
     }

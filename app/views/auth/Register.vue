@@ -31,8 +31,17 @@
                 </GridLayout>
 
                 <Button text="Register" class="btn-primary" :isEnabled="!processing"
-                    @tap="onRegister"></Button>
+                    @tap="onRegister"
+                ></Button>
+            
             </StackLayout>
+
+            <Label class="login-label sign-up-label" @tap="navigateToLogin">
+                <FormattedString>
+                    <Span text="Already have an account?"></Span>
+                    <Span text=" Login" class="bold"></Span>
+                </FormattedString>
+            </Label>
 
         </FlexboxLayout>
     </Page>
@@ -50,13 +59,15 @@ export default {
             confirmPassword: null,
             processing: false,
 
-
         };
     },
     methods: {
         ...mapActions([
             'registerNewUserWithEmailAndPassword'
         ]),
+        navigateToLogin(){
+            this.$navigateTo(routes.login)
+        },
         setProcessing(status){
             this.processing = status
         },
@@ -135,5 +146,19 @@ export default {
 }
 .btn-primary:disabled {
   opacity: 0.5;
+}
+
+.login-label {
+    horizontal-align: center;
+    color: #A8A8A8;
+    font-size: 16;
+}
+
+.sign-up-label {
+    margin-bottom: 20;
+}
+
+.bold {
+    color: #000000;
 }
 </style>

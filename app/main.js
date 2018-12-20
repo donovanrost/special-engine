@@ -3,6 +3,8 @@ import VueDevtools from 'nativescript-vue-devtools'
 import Vuex from 'vuex'
 import { store } from './store/index.js'
 
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
 import RadListView from 'nativescript-ui-listview/vue'
 import firebase from 'nativescript-plugin-firebase'
@@ -25,11 +27,14 @@ firebase.init({
   onAuthStateChanged: data => { 
     console.log((data.loggedIn ? "Logged in to firebase" : "Logged out from firebase") + " (firebase.init() onAuthStateChanged callback)");
     if (data.loggedIn) {
-      // store.commit('setAuthenticatedUser', data.user.uid)
-      // console.log("uID: " + data.user.uid)
+      store.commit('setAuthenticatedUser', data.user.uid)
+      store.dispatch('fetchUserData', data.user.uid) // DOES THIS LINE NEED TO BE HERE? I DON"T THINK SO, BUT SEEMINGLY it does
+    
+      // If the account is brand new, create his account scaffolding
+      if (data.user.metadata.creationTimestamp.getTime() === data.user.metadata.lastSignInTimestamp.getTime()) {
+        store.dispatch('createNewUserDocument', store.getters.getAuthenticatedUser)
 
-
-      firebase.logout()
+      }
 
     }
     else {
@@ -48,6 +53,8 @@ firebase.init({
 
 Vue.use(Vuex)
 Vue.use(RadListView)
+Vue.use(VueAxios, axios)
+
 
 
 new Vue({
