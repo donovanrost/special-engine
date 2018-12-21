@@ -8,5 +8,6 @@ node_modules
 hooks
 platforms
 
+.env
 #firebase service account
 */firebaseServiceAccount.json
