@@ -1,18 +1,18 @@
 <template>
     <Page>
-        <ActionBar title="Welcome to NativeScript-Vue!"/>
-        <GridLayout  columns="*" rows="*">
-            <StackLayout v-if="!getCurrentBoard" >
-                <Label text="Data not loaded" row="0"></Label>
+        <ActionBar title="Task Board">
+            <ActionItem @tap="onTapAdd"
+                ios.systemIcon="4" ios.position="right"
+            />
+
+        </ActionBar>
+        <ScrollView class="home-panel">
+            <StackLayout v-if="getCurrentBoard">
+                <PhasePanel v-for="phase in getCurrentBoard.data().phases" :key="phase"
+                    :phase="phase"
+                ></PhasePanel>
             </StackLayout>
-            <StackLayout v-else>
-                <Label :text="getCurrentBoard.owner" row="0"></Label>
-                <Label :text="getCurrentBoard.phases" row="1"></Label>
-                <StackLayout v-for="phase in getCurrentBoard.phases" :key="phase">
-                    <Label :text="phase"></Label>
-                </StackLayout>
-            </StackLayout>
-        </GridLayout>
+        </ScrollView>
     </Page>
 </template>
 
@@ -20,11 +20,15 @@
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-  export default {
+import PhasePanel from './tasks/PhasePanel'
+import AddTaskModal from './tasks/AddTaskModal'
+export default {
+    components: {
+        'PhasePanel': PhasePanel,
+    },  
     data() {
       return {
         msg: 'Hello World!',
-        //boardData: null
 
       }
     },
@@ -44,15 +48,17 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 
                 if (doc.exists) {
                     console.log('FROM fetchBoardData: ', doc.data())
-                    //this.boardData = doc.data()
-                    this.setCurrentBoard(doc.data())
+                    this.setCurrentBoard(doc)
                 }
             })
             .catch(err => {
                 console.log('FROM fetchBoardData: ', 3)
 
             })
-        }
+        },
+        onTapAdd() {
+            this.$showModal(AddTaskModal)
+        },
     },
     computed: {
         ...mapGetters([
@@ -60,15 +66,18 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
             'getCurrentBoard'
         ])
     },
-    created() {
-        console.log(1, "FROM CREATED HOOK")
+    /* experiment with using the mounted hook instead of created.
+        maybe i won't need the timeout
+     */
+    mounted() { 
+        console.log(1, "FROM mounted HOOK")
         this.fetchUserData()
         .then(() => {
-            console.log(2, "FROM CREATED HOOK")
-            setTimeout(() => {
-                console.log( "FROM CREATED HOOK", this.getUserData.boards[0])
+            console.log(2, "FROM mounted HOOK")
+            // setTimeout(() => {
+                console.log( "FROM mounted HOOK", this.getUserData.boards[0])
                 this.fetchBoardData(this.getUserData.boards[0])
-            }, 500)
+            // }, 750)
 
         })
     }
@@ -76,15 +85,20 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 </script>
 
 <style scoped>
-    ActionBar {
-        background-color: #53ba82;
-        color: #ffffff;
-    }
+ActionBar {
+    background-color: #53ba82;
+    color: #ffffff;
+}
 
-    .message {
-        vertical-align: center;
-        text-align: center;
-        font-size: 20;
-        color: #333333;
-    }
+.message {
+    vertical-align: center;
+    text-align: center;
+    font-size: 20;
+    color: #333333;
+}
+.home-panel {
+    /* vertical-align: center; */
+    font-size: 20;
+    margin: 15;
+}
 </style>

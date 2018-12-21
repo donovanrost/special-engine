@@ -9,8 +9,10 @@ import VueAxios from 'vue-axios'
 import RadListView from 'nativescript-ui-listview/vue'
 import firebase from 'nativescript-plugin-firebase'
 
-
 import routes from './routes'
+
+Vue.registerElement('DropDown', ()=> require('nativescript-drop-down').DropDown)
+
 
 if(TNS_ENV !== 'production') {
   Vue.use(VueDevtools)
@@ -29,7 +31,7 @@ firebase.init({
     if (data.loggedIn) {
       store.commit('setAuthenticatedUser', data.user.uid)
       store.dispatch('fetchUserData', data.user.uid) // DOES THIS LINE NEED TO BE HERE? I DON"T THINK SO, BUT SEEMINGLY it does
-    
+      
       // If the account is brand new, create his account scaffolding
       if (data.user.metadata.creationTimestamp.getTime() === data.user.metadata.lastSignInTimestamp.getTime()) {
         store.dispatch('createNewUserDocument', store.getters.getAuthenticatedUser)
@@ -59,5 +61,5 @@ Vue.use(VueAxios, axios)
 
 new Vue({
   store:store,
-  render: h => h('frame', [h(store.getters.getAuthenticatedUser ? routes.app : routes.register)])
+  render: h => h('frame', [h((store.getters.getAuthenticatedUser && store.getters.getUserData) ? routes.app : routes.register)])
 }).$start()

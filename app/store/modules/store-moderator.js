@@ -10,15 +10,8 @@ export default function configureModerator (store) {
 	store.subscribe(({type, payload },  state,) => {
 		switch (type) {
 			case 'setAuthenticatedUser': 
-                //store.dispatch('fetchUserData', store.getters.getAuthenticatedUser.uid)
-                //this.$navigateTo
+
 				return
-			case 'registerNewUser':
-				console.log('FROM MODERATOR', store.getters.getAuthenticatedUser)
-				store.dispatch('createNewUserDocument', store.getters.getAuthenticatedUser)
-				return 
-
-
 		}
 	})
 
