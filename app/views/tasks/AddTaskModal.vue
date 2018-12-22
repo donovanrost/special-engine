@@ -1,20 +1,43 @@
 <template>
-	<StackLayout class="p-20" backgroundColor="white">
+    <FlexboxLayout backgroundColor="white" flexDirection="column">
+        <GridLayout rows="auto" columns="75,*,75" class="action-bar p-10">
+            <Button text="Close" class="text-left action-item" row="0" col="0" 
+                @tap="$modal.close()"/>
+            <Label text="My Modal" class="text-center action-bar-title" row="0" col="1" />
+        </GridLayout>
+
+	<StackLayout class="task-form" >
         <ActivityIndicator :busy="busy"/>
-        <TextField v-model="taskTitle" hint="Enter a new task" />
-        <TextField v-model="taskDescription" hint="Task Description" />
-        <DropDown :items="getCurrentBoard.data().phases" 
-            hint="backlog"
-            :selectedIndex="initialPhaseIndex"
-            @selectedIndexChanged="onChanged($event)"
+        <GridLayout rows="auto, auto, auto">
+            <StackLayout class="input-field" row="0">
+                <TextField v-model="taskTitle" hint="Enter a new task" />
+            </StackLayout>
 
-            row="0" colSpan="2"
-        ></DropDown>
+            <StackLayout class="input-field" row="1">
+                <TextField v-model="taskDescription" hint="Task Description" />
+            </StackLayout>
 
-        <Button text="Add Task" @tap="onButtonTap" />
+            <StackLayout class="input-field" row="2">
+                <DropDown :items="getCurrentBoard.data().phases" 
+                    hint="backlog"
+                    :selectedIndex="initialPhaseIndex"
+                    @selectedIndexChanged="onChanged($event)"
+
+                    row="0" colSpan="2"
+                ></DropDown>
+            </StackLayout>
+
+
+        </GridLayout>
+        <Button class="btn-primary" text="Add Task" @tap="onButtonTap"/>
 
 	</StackLayout>
+    </FlexboxLayout>
 </template>
+
+
+
+
 
 <script>
 import { mapGetters } from 'vuex'
@@ -59,7 +82,8 @@ export default {
                 boardID: this.getCurrentBoard.id,
                 phase: this.getCurrentBoard.data().phases[this.initialPhaseIndex],
                 title: this.taskTitle,
-                description: this.taskDescription
+                description: this.taskDescription,
+                expanded: false,
             })
             .then(() => {
                 this.setBusy(false)
@@ -75,4 +99,15 @@ export default {
 </script>
 
 <style>
+.task-form{
+    margin-top:30;
+    margin-left: 30;
+    margin-right: 30;
+    flex-grow: 2;
+}
+.input-field2{
+    margin-bottom:25;
+    border-radius:5;
+}
+
 </style>

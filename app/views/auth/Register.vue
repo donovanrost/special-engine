@@ -129,7 +129,7 @@ export default {
 }
 .input-field {
     margin-bottom: 25;
-    background-color:#96BAD6;
+    /* background-color:#96BAD6; */
     border-radius: 5;
 
 }

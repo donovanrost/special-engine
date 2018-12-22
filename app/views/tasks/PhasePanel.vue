@@ -5,32 +5,38 @@
     </FlexboxLayout>
     <FlexboxLayout class="item panel-body" v-show="showBody">
       <ScrollView>
-          <RadListView ref="listView" for="item in itemList"
+          <RadListView ref="listView" for="item in itemList" class="list"
+            @itemTap="onItemTap"
             swipeActions="true"
             @itemSwipeProgressChanged="onItemSwipeChanged"
             @itemSwipeProgressStarted="onSwipeStarted">
 
             <v-template>
-                <StackLayout class="item" orientation="vertical">
-                    <Label class="big" :text="item.title"></Label>
-                    <Label v-if="item.description" :text="item.description"></Label>
-                </StackLayout>
+                <PhasePanelItem :item="item">
+
+                </PhasePanelItem>
+                <!-- <FlexboxLayout class="item list-item" flexDirection="column">
+                    <Label class="big list-item-title" :text="item.title"/>>
+                    <Label class="list-item-description" :text="item.description"/>
+                    <StackLayout class="list-item-separator" height="2"/>
+                </FlexboxLayout> -->
+
             </v-template>
 
             <v-template name="itemswipe">
             <GridLayout columns="auto, *, auto" backgroundColor="White">
-                <StackLayout id="mark-view" col="0" class="swipe-item left padded"
-                    orientation="horizontal" @tap="onLeftSwipeClick">
-                <Label text="mark" verticalAlignment="center" horizontalAlignment="center"/>
+                <StackLayout id="delete-view" col="0" class="swipe-item left"
+                    orientation="horizontal" @tap="onDelete">
+                <Label text="Delete" verticalAlignment="center" horizontalAlignment="center"/>
                 </StackLayout>
-                <StackLayout id="delete-view" col="2" 
+                <StackLayout id="advance-view" col="2" 
                     :class="classObject"
                     orientation="horizontal" @tap="onRightSwipeClick">
                 <Label text="delete" verticalAlignment="center" horizontalAlignment="center" />
                 </StackLayout>
             </GridLayout>
             </v-template>
-          
+           
           </RadListView>
           
       </ScrollView>
@@ -44,8 +50,13 @@
 <script>
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
+import PhasePanelItem from './PhasePanelItem'
+
 import { mapGetters, mapActions, mapMutations } from 'vuex'
   export default {
+    components: {
+        "PhasePanelItem": PhasePanelItem
+    },
     props:{
         phase: {
             type: String,
@@ -71,6 +82,10 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
         ...mapMutations([
         
         ]),
+        onItemTap({item}) {
+            console.log(item.title)
+            item.data().expanded = !item.data().expanded
+        },
         onHeaderTap() {
         this.showBody = !this.showBody
       },
@@ -79,14 +94,22 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
             console.log(`Swipe started`);
             const swipeLimits = data.swipeLimits;
             const swipeView = object;
-            const leftItem = swipeView.getViewById('mark-view');
-            const rightItem = swipeView.getViewById('delete-view');
+            const leftItem = swipeView.getViewById('delete-view');
+            const rightItem = swipeView.getViewById('advance-view');
             swipeLimits.left = leftItem.getMeasuredWidth();
             swipeLimits.right = rightItem.getMeasuredWidth();
             swipeLimits.threshold = leftItem.getMeasuredWidth() / 2;
         },
-        onLeftSwipeClick (event) {
-            console.log('left action tapped');
+        onDelete ({ object }) {
+            const itemIndex = this.itemList.indexOf(object.bindingContext)
+            const item = this.itemList[itemIndex]
+    
+            console.log("FROM ON DELETE: ", item)
+            firebase.firestore.collection('tasks').doc(item.id).delete()
+
+            this.itemList.splice(itemIndex, 1);
+
+
             this.$refs.listView.notifySwipeToExecuteFinished();
         },
         onRightSwipeClick ({ object }) {
@@ -110,7 +133,8 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
             .onSnapshot( (snapshot) => {
                 snapshot.docChanges().forEach((change) =>{
                     if (change.type === 'added') {
-                        this.itemList.push(change.doc.data())
+                        //pass the doc so you can have the ID
+                        this.itemList.push(change.doc)
                     }
                 })
             })
@@ -134,8 +158,26 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 </script>
 
 <style scoped>
-#mark-view{
-    background-color:blue;
+.list {
+}
+.list-item {
+    margin-left: 5;
+    margin-right: 5
+}
+.list-item-title {
+    font-size: 24;
+    
+}
+.list-item-description {
+    font-size: 18;
+}
+.list-item-separator {
+    background-color: lightslategray;
+    /* margin-top: 5;
+    margin-bottom: 5; */
+}
+#delete-view{
+    background-color: #D51A1A;
 }
 /* #delete-view{
     background-color:red;
