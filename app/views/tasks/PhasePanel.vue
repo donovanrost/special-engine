@@ -27,12 +27,16 @@
             <GridLayout columns="auto, *, auto" backgroundColor="White">
                 <StackLayout id="delete-view" col="0" class="swipe-item left"
                     orientation="horizontal" @tap="onDelete">
-                <Label text="Delete" verticalAlignment="center" horizontalAlignment="center"/>
+                <Label text="Delete" verticalAlignment="center"
+                    color="white"
+                    horizontalAlignment="center"/>
                 </StackLayout>
                 <StackLayout id="advance-view" col="2" 
-                    :class="classObject"
+                    class="swipe-item right"
                     orientation="horizontal" @tap="onRightSwipeClick">
-                <Label text="delete" verticalAlignment="center" horizontalAlignment="center" />
+                <Label text="Advance" verticalAlignment="center" 
+                    color="white"
+                horizontalAlignment="center" />
                 </StackLayout>
             </GridLayout>
             </v-template>
@@ -69,8 +73,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
           itemList: [
             
           ],
-          selected: false,
-          activeClass: 'selected',
+
           
 
       }
@@ -78,9 +81,6 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
     methods: {
         ...mapActions([
             'fetchUserData'
-        ]),
-        ...mapMutations([
-        
         ]),
         onItemTap({item}) {
             console.log(item.title)
@@ -113,7 +113,14 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
             this.$refs.listView.notifySwipeToExecuteFinished();
         },
         onRightSwipeClick ({ object }) {
-            console.log('right action tapped');
+            const itemIndex = this.itemList.indexOf(object.bindingContext)
+            const item = this.itemList[itemIndex]
+            const currentPhaseIndex = this.getCurrentBoard.data().phases.indexOf(item.data().phase)
+
+            firebase.firestore.collection('tasks').doc(item.id).update({
+                phase: this.getCurrentBoard.data().phases[currentPhaseIndex + 1]
+            })
+
             // remove item
             this.itemList.splice(this.itemList.indexOf(object.bindingContext), 1);
             this.$refs.listView.notifySwipeToExecuteFinished();
@@ -136,6 +143,15 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
                         //pass the doc so you can have the ID
                         this.itemList.push(change.doc)
                     }
+                    if (change.type === 'modified') {
+                        console.log("FROM FETCHTASKS CHANGE TYPE IS MODIFIED")
+                        console.log(change.doc.data())
+                    }
+                    if (change.type === 'removed') {
+                        console.log("FROM FETCHTASKS CHANGE TYPE IS REMOVED")
+                        console.log(change.doc.data())
+                    }
+                    
                 })
             })
           
@@ -176,8 +192,12 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
     /* margin-top: 5;
     margin-bottom: 5; */
 }
-#delete-view{
+#delete-view {
     background-color: #D51A1A;
+}
+#advance-view {
+    background-color:#1ad51a ;
+    
 }
 /* #delete-view{
     background-color:red;
@@ -188,7 +208,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 .notSelected {
     background-color: yellow;
 }
-.panel{
+.panel {
   /* height: 300; */
   background-color: lightblue;
   border-radius:10;
