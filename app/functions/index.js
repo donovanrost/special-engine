@@ -24,6 +24,94 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
  response.send("Hello from Firebase!");
 });
 
+exports.resetBoard = functions.https.onRequest((request, response) => {
+    const allPromises = []
+
+    //first get all boards
+    const boards = db.collection('boards').get()
+    .then(snapshot => {
+        historicalBoardPromises = []
+        snapshot.docs.forEach(boardDoc => {
+
+        // then for each board, create a historical board
+            const historicalBoardPromise = db.collection('historicalBoard')
+            .add({
+                totalTasks: boardDoc.data().totalTasks, 
+                completedTasks: boardDoc.data().completedTasks
+            })
+            .then(docRef => {
+                const phasePromises = []
+                const historicalBoardId = docRef.id
+
+        // now iterate through each phase in boardDoc
+                boardDoc.data().phases.forEach(phase => {
+        // get all the tasks for each phase 
+                    const phasePromise = db.collection('tasks')
+                    .where('boardID', '==', boardDoc.id)
+                    .where('phase', '==', phase).get()
+                    .then(snapshot => {
+                        const innerPromises = []
+                        snapshot.docs.forEach(doc => {
+                            const historicalTask = Object.assign({}, doc.data())
+                            historicalTask.boardID = historicalBoardId
+                            if (phase === 'backlog') {
+                                // do nothing right now
+                            }
+                            if (phase === 'todo') {
+                                // nothing phase specific
+                            }
+                            if (phase === 'doing') {
+                                const p = db.collection('tasks').doc(doc.id)
+                                .update({phase: 'todo'})
+                                innerPromises.push(p)
+                            }
+                            if (phase === 'completed') {
+                                const p = db.collection('tasks').doc(doc.id).delete()
+                                innerPromises.push(p)
+                            }
+                            const p1 = db.collection('historicalTasks').add(historicalTask)
+
+                            innerPromises.push(p1)
+
+                        })
+                        
+                        return Promise.all(innerPromises)
+
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        res.status(500).send(err)
+                    
+                    })
+
+
+
+                    phasePromises.push(phasePromise)
+                    response.send('success')
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).send(err)
+                
+                })
+                return Promise.all(phasePromises)
+            })
+
+
+            historicalBoardPromises.push(historicalBoardPromise)
+        })
+
+        return Promise.all(historicalBoardPromises)
+    })
+
+
+
+
+    allPromises.push(boards)
+    return Promise.all(allPromises)
+})
+
+
 exports.initializeNewUser = functions.https.onRequest((req, res) => {
     cors(req, res, () => {
 

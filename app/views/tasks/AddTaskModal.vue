@@ -20,13 +20,12 @@
             <StackLayout class="input-field" row="2">
                 <DropDown :items="getCurrentBoard.data().phases" 
                     hint="backlog"
-                    :selectedIndex="initialPhaseIndex"
+                    ``:selectedIndex="initialPhaseIndex"
                     @selectedIndexChanged="onChanged($event)"
 
                     row="0" colSpan="2"
                 ></DropDown>
             </StackLayout>
-
 
         </GridLayout>
         <Button class="btn-primary" text="Add Task" @tap="onButtonTap"/>
@@ -93,6 +92,7 @@ export default {
         },
         onChanged(e){
             this.initialPhaseIndex = e.newIndex
+            console.log(e.newIndex, this.initialPhaseIndex)
         }
     }
 };

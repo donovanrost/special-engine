@@ -56,7 +56,8 @@ export default {
     },
     methods: {
         ...mapActions([
-            'loginWithEmailAndPassword'
+            'loginWithEmailAndPassword',
+            'fetchUserData'
         ]),
         navigateToRegister(){
             this.$navigateTo(routes.register)
@@ -82,9 +83,14 @@ export default {
             this.loginWithEmailAndPassword({email: this.email, password: this.password})
             .then(cred => {
                 console.log(cred)
-                this.setProcessing(false)
-                this.resetForm()
-                this.$navigateTo(routes.app, { clearHistory: true })
+
+                this.fetchUserData(cred.uid)
+                .then(() => {
+                    this.setProcessing(false)
+                    this.resetForm()
+                    this.$navigateTo(routes.app, { clearHistory: true })
+                })
+
 
 
             })

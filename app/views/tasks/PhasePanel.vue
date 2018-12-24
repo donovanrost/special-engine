@@ -1,11 +1,12 @@
 <template>
   <FlexboxLayout class="panel" flexDirection="column">
     <FlexboxLayout class="panel-header" @tap="onHeaderTap()">
-      <Label :text="phase" />
+      <Label :text="phase" class="panel-header-text" />
     </FlexboxLayout>
     <FlexboxLayout class="item panel-body" v-show="showBody">
       <ScrollView>
           <RadListView ref="listView" for="item in itemList" class="list"
+            :height="(itemList.length*50 > 250)  ? 300 : itemList.length*50 + 50"
             @itemTap="onItemTap"
             swipeActions="true"
             @itemSwipeProgressChanged="onItemSwipeChanged"
@@ -15,11 +16,7 @@
                 <PhasePanelItem :item="item">
 
                 </PhasePanelItem>
-                <!-- <FlexboxLayout class="item list-item" flexDirection="column">
-                    <Label class="big list-item-title" :text="item.title"/>>
-                    <Label class="list-item-description" :text="item.description"/>
-                    <StackLayout class="list-item-separator" height="2"/>
-                </FlexboxLayout> -->
+
 
             </v-template>
 
@@ -221,10 +218,14 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
   background-color: blue; 
   align-items: center;
   justify-content: center;
-  opacity: .8;
+  opacity: .5;
+}
+.panel-header-text {
+    opacity:1;
 }
 .panel-body{
-  height:300;
+  /* height:300; */
+  /* flex-grow:2; */
   background-color: lightblue;
   /* margin: 10; */
 }
