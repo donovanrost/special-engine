@@ -86,7 +86,8 @@
                     <FlexboxLayout row="1" flexDirection="column">
                         <StackLayout v-for="(item, index) in task.checklist" :key="index" >
                             <CheckBox fontSize="20"
-                                @checkedChange="onCheckChange(item)" 
+                                @checkedChange="onCheckChange(item)"
+                                @longPress="openEditChecklistItem(index)" 
                                 :text="item.label" 
                                 :checked="item.checked"
                             ></CheckBox>
@@ -148,6 +149,9 @@ export default {
         ])
     },
     methods: {
+        openEditChecklistItem(index) {
+
+        },
         isValidPhase(index) {
             if (!index) return false;
             if (index < 0 || index > this.getCurrentBoard.data().phases.length - 1) return false;

@@ -4,5 +4,8 @@
   },
   "main": "main",
   "name": "task-manager",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "devDependencies": {
+    "tns-platform-declarations": "^5.1.1"
+  }
 }
