@@ -1,11 +1,13 @@
 <template>
-    <Page>
-        <ActionBar title="Task Board">
-            <ActionItem @tap="onTapAdd"
-                ios.systemIcon="4" ios.position="right"
-            />
+    <Page class="page" >
+            <ActionBar title="Task Board" backgroundColor="#2d2d2d" color="#0083FF">
+                <ActionItem @tap="onTapAdd"
+                    ios.systemIcon="4" ios.position="right"
+                    color="#0083FF"
+                />
 
-        </ActionBar>
+
+            </ActionBar>
         <ScrollView class="home-panel">
             <StackLayout v-if="getCurrentBoard">
                 <PhasePanel v-for="phase in getCurrentBoard.data().phases" :key="phase"
@@ -34,7 +36,8 @@ export default {
     },
     methods: {
         ...mapActions([
-            'fetchUserData'
+            'fetchUserData',
+            'fetchTemplates'
         ]),
         ...mapMutations([
             'setCurrentBoard'
@@ -45,7 +48,6 @@ export default {
             firebase.firestore.collection('boards').doc(boardID).get()
             .then(doc => {            
                 console.log('FROM fetchBoardData: ', 2)
-
                 if (doc.exists) {
                     console.log('FROM fetchBoardData: ', doc.data())
                     this.setCurrentBoard(doc)
@@ -53,7 +55,6 @@ export default {
             })
             .catch(err => {
                 console.log('FROM fetchBoardData: ', 3)
-
             })
         },
         onTapAdd() {
@@ -63,22 +64,20 @@ export default {
     computed: {
         ...mapGetters([
             'getUserData',
-            'getCurrentBoard'
+            'getCurrentBoard',
+            'getTemplates'
         ])
     },
-    /* experiment with using the mounted hook instead of created.
-        maybe i won't need the timeout
-     */
+
     mounted() { 
         console.log(1, "FROM mounted HOOK")
         this.fetchUserData()
         .then(() => {
             console.log(2, "FROM mounted HOOK")
-            // setTimeout(() => {
-                console.log( "FROM mounted HOOK", this.getUserData.boards[0])
-                this.fetchBoardData(this.getUserData.boards[0])
-            // }, 750)
-
+            console.log( "FROM mounted HOOK", this.getUserData.boards[0])
+            this.fetchBoardData(this.getUserData.boards[0])
+            console.log(43, this.getTemplates)
+            this.fetchTemplates(this.getUserData.boards[0])
         })
     }
   }

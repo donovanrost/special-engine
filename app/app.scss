@@ -8,3 +8,20 @@
 
 // Global SCSS styling
 // @see https://docs.nativescript.org/ui/styling
+
+
+// .fa {
+//     Font-family: 'Font Awesome 5 Free';
+// }
+
+.fa {
+    font-family: "Font Awesome 5 Free", "fa-regular-400", "fa-solid-900";
+}
+.fas {
+    font-family: "Font Awesome 5 Free", "fa-solid-900";
+}
+.panel-title {
+    color: #003c5a;
+    text-align: center;
+    font-weight: bold;
+}

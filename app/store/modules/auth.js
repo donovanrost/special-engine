@@ -43,6 +43,7 @@ const actions = {
         .then(cred => {
             console.log(cred)
             commit('setAuthenticatedUser', cred.uid)
+            return cred
 
         })
     }

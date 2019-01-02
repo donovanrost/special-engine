@@ -1,11 +1,12 @@
 <template>
   <FlexboxLayout class="panel" flexDirection="column">
-    <FlexboxLayout class="panel-header" @tap="onHeaderTap()">
-      <Label :text="phase" class="panel-header-text" />
-    </FlexboxLayout>
+    <PhasePanelHeader :itemList="itemList" :phase="phase" @headerTap="onHeaderTap">
+
+    </PhasePanelHeader>
     <FlexboxLayout class="item panel-body" v-show="showBody">
-      <ScrollView>
+      <ScrollView backgroundColor="black">
           <RadListView ref="listView" for="item in itemList" class="list"
+          backgroundColor="black"
             :height="(itemList.length*50 > 250)  ? 300 : itemList.length*50 + 50"
             @itemTap="onItemTap"
             swipeActions="true"
@@ -21,19 +22,19 @@
             </v-template>
 
             <v-template name="itemswipe">
-            <GridLayout columns="auto, *, auto" backgroundColor="White">
-                <StackLayout id="delete-view" col="0" class="swipe-item left"
+            <GridLayout columns="auto, *, auto" backgroundColor="black">
+                <StackLayout id="delete-view" col="0" class="swipe-item left bg-danger "
                     orientation="horizontal" @tap="onDelete">
                 <Label text="Delete" verticalAlignment="center"
                     color="white"
                     horizontalAlignment="center"/>
                 </StackLayout>
                 <StackLayout id="advance-view" col="2" 
-                    class="swipe-item right"
+                    class="swipe-item right bg-primary"
                     orientation="horizontal" @tap="onRightSwipeClick">
                 <Label text="Advance" verticalAlignment="center" 
                     color="white"
-                horizontalAlignment="center" />
+                    horizontalAlignment="center" />
                 </StackLayout>
             </GridLayout>
             </v-template>
@@ -52,11 +53,13 @@
 import * as firebase from "nativescript-plugin-firebase";
 import { firestore } from "nativescript-plugin-firebase";
 import PhasePanelItem from './PhasePanelItem'
+import PhasePanelHeader from './PhasePanelHeader'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
   export default {
     components: {
-        "PhasePanelItem": PhasePanelItem
+        "PhasePanelItem": PhasePanelItem,
+        "PhasePanelHeader": PhasePanelHeader
     },
     props:{
         phase: {
@@ -84,7 +87,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
             item.data().expanded = !item.data().expanded
         },
         onHeaderTap() {
-        this.showBody = !this.showBody
+            this.showBody = !this.showBody
       },
       /* RadListView functions */
         onSwipeStarted ({ data, object }) {
@@ -114,9 +117,18 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
             const item = this.itemList[itemIndex]
             const currentPhaseIndex = this.getCurrentBoard.data().phases.indexOf(item.data().phase)
 
-            firebase.firestore.collection('tasks').doc(item.id).update({
-                phase: this.getCurrentBoard.data().phases[currentPhaseIndex + 1]
-            })
+            // if tasks is completed then go back a phase 
+            // is this good UX? beats me
+            if ((currentPhaseIndex +1) === this.getCurrentBoard.data().phases.length) {
+                firebase.firestore.collection('tasks').doc(item.id).update({
+                    phase: this.getCurrentBoard.data().phases[currentPhaseIndex - 1]
+
+                })
+            } else {
+                firebase.firestore.collection('tasks').doc(item.id).update({
+                    phase: this.getCurrentBoard.data().phases[currentPhaseIndex + 1]
+                })
+            }
 
             // remove item
             this.itemList.splice(this.itemList.indexOf(object.bindingContext), 1);
@@ -190,26 +202,21 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
     margin-bottom: 5; */
 }
 #delete-view {
-    background-color: #D51A1A;
+    /* background-color: #D51A1A; */
 }
 #advance-view {
-    background-color:#1ad51a ;
+    /* background-color:#1ad51a ; */
     
 }
 /* #delete-view{
     background-color:red;
 } */
-.selected{
-    background-color: green;
-}
-.notSelected {
-    background-color: yellow;
-}
+
 .panel {
   /* height: 300; */
-  background-color: lightblue;
+  background-color: black;
   border-radius:10;
-  border-color: blue;
+  /* border-color: blue; */
   border-width: 2;
   margin-bottom: 15;
 }
@@ -226,7 +233,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 .panel-body{
   /* height:300; */
   /* flex-grow:2; */
-  background-color: lightblue;
+  /* background-color: lightblue; */
   /* margin: 10; */
 }
 .panel-body-item {
@@ -234,7 +241,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
   color:red;
   /* margin-bottom: 10; */
   border-bottom-width: 2;
-  border-bottom-color: lightpink;
+  /* border-bottom-color: lightpink; */
 }
 .padded {
     padding: 10;

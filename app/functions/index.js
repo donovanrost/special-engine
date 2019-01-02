@@ -130,7 +130,7 @@ exports.initializeNewUser = functions.https.onRequest((req, res) => {
 
         })
         .then(docRef => {
-            return db.collection('users').doc(uid).set({
+            const p1 = db.collection('users').doc(uid).set({
                 uid: uid,
                 boards: [docRef.id],
                 maxBoards: 1,
@@ -145,6 +145,9 @@ exports.initializeNewUser = functions.https.onRequest((req, res) => {
                 res.status(500).send(err)
             
             })
+
+            innerPromises.push(p1)
+            return Promise.all(innerPromises)
         })
         .catch(err => {
             console.log(err)
@@ -154,3 +157,5 @@ exports.initializeNewUser = functions.https.onRequest((req, res) => {
         return Promise.all(allPromises)
     })
 })
+
+

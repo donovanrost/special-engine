@@ -5,6 +5,10 @@ import { store } from './store/index.js'
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+// import FontIcon from 'nativescript-vue-fonticon'
+import {TNSFontIcon, fonticon} from 'nativescript-fonticon';
+import './styles.scss'
+import './app.scss'
 
 import RadListView from 'nativescript-ui-listview/vue'
 import firebase from 'nativescript-plugin-firebase'
@@ -12,6 +16,7 @@ import firebase from 'nativescript-plugin-firebase'
 import routes from './routes'
 
 Vue.registerElement('DropDown', ()=> require('nativescript-drop-down').DropDown)
+Vue.registerElement('CheckBox', () => require('nativescript-checkbox').CheckBox)
 
 
 if(TNS_ENV !== 'production') {
@@ -56,7 +61,21 @@ firebase.init({
 Vue.use(Vuex)
 Vue.use(RadListView)
 Vue.use(VueAxios, axios)
+// Vue.use(FontIcon, {
+//   //componentName: 'FIcon', // <-- Optional. Will be the name for component icon.
+//   debug: true, // <-- Optional. Will output the css mapping to console.
+//   paths: {
+//     fa: './assets/css/font-awesome.css',
+//     //ion: './assets/css/ionicons.css'
+//   }
+// })
+TNSFontIcon.debug = true;
+TNSFontIcon.paths = {
+  'fa': './assets/css/font-awesome.css',
+};
+TNSFontIcon.loadCss();
 
+Vue.filter('fonticon', fonticon);
 
 
 new Vue({
