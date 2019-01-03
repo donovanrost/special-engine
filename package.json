@@ -16,10 +16,11 @@
   "dependencies": {
     "@vue/devtools": "5.0.0-beta.3",
     "axios": "^0.18.0",
+    "nativescript-cfalert-dialog": "^1.0.13",
     "nativescript-checkbox": "^3.0.3",
     "nativescript-drop-down": "^4.0.1",
     "nativescript-fonticon": "^2.0.0",
-    "nativescript-plugin-firebase": "^7.5.1",
+    "nativescript-plugin-firebase": "^7.6.0",
     "nativescript-socket.io": "^0.9.0",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-toast": "^1.4.6",
